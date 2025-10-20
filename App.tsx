@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ImageDisplay } from './components/ImageDisplay';
 import { PromptControls } from './components/PromptControls';
-import { generateInfluencerImage } from './services/geminiService';
 import { fileToBase64 } from './utils/fileUtils';
 import { GeminiIcon } from './components/icons';
 import { ModelGallery } from './components/ModelGallery';
@@ -35,10 +34,29 @@ const App: React.FC = () => {
         setIsLoading(true);
         setError(null);
         try {
-            // Save the current state (image and prompt) to history before generating
+            // Save the current state to history before generating
             setHistory([...history, { image: currentImage, prompt: prompt }]);
 
-            const newImage = await generateInfluencerImage(prompt, currentImage);
+            // Call our new secure API endpoint
+            const response = await fetch('/api/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    prompt: prompt,
+                    baseImage: currentImage,
+                }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || `Request failed with status ${response.status}`);
+            }
+
+            const data = await response.json();
+            const newImage = data.imageUrl;
+            
             setCurrentImage(newImage);
             // Suggest a follow-up prompt
             setPrompt(currentImage 
