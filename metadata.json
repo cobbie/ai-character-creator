@@ -1,0 +1,5 @@
+{
+  "name": "AI Influencer Studio",
+  "description": "Create a consistent AI influencer character. Generate an initial image, then use that image as a reference for subsequent prompts to create new scenes and styles while maintaining the character's appearance.",
+  "requestFramePermissions": []
+}
